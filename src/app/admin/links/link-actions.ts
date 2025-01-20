@@ -1,6 +1,6 @@
 'use server';
 
-import { addLink } from '@/lib/links';
+import { addLink, removeLink } from '@/lib/links';
 import { redis } from '@/lib/redis';
 import { adminSession } from '@/lib/session';
 import { revalidatePath } from 'next/cache';
@@ -42,5 +42,22 @@ export async function addLinkAction(formData: FormData) {
     name,
     createdAt: new Date().toISOString(),
   });
+  revalidatePath('/admin/links');
+}
+
+export async function removeLinkAction(formData: FormData) {
+  'use server';
+
+  const session = adminSession();
+  if (!session) {
+    throw new Error('Not logged in');
+  }
+
+  const name = formData.get('name')?.toString();
+  if (!name) {
+    throw new Error('Missing form data field: name');
+  }
+
+  await removeLink(redis, name);
   revalidatePath('/admin/links');
 }

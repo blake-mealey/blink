@@ -13,7 +13,7 @@ import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Separator } from '@/components/ui/separator';
 import { useState } from 'react';
-import { addLinkAction } from './add-link-action';
+import { addLinkAction } from './link-actions';
 
 export function AddLinkForm() {
   const [nameType, setNameType] = useState('random');
