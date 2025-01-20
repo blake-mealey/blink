@@ -55,17 +55,25 @@ export async function getLink(
 
 export async function addLink(redis: Redis, link: Link) {
   const key = `@link/${link.name}`;
-  await redis.set(key, link, { nx: true });
-  await redis.zadd('@links', {
-    member: key,
-    score: Date.parse(link.createdAt),
-  });
+  const p = redis.pipeline();
+  p.set(key, link, { nx: true });
+  p.zadd(
+    '@links',
+    { nx: true },
+    {
+      member: key,
+      score: Date.parse(link.createdAt),
+    }
+  );
+  await p.exec();
 }
 
 export async function removeLink(redis: Redis, name: string) {
   const key = `@link/${name}`;
-  await redis.del(key);
-  await redis.zrem('@links', key);
+  const p = redis.pipeline();
+  p.del(key);
+  p.zrem('@links', key);
+  await p.exec();
 }
 
 export async function trackLinkHit(redis: Redis, name: string) {
