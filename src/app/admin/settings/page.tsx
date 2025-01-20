@@ -1,0 +1,59 @@
+import { Button } from '@/components/ui/button';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { redis } from '@/lib/redis';
+import { adminSession, changeAdminPassword } from '@/lib/session';
+import { Label } from '@radix-ui/react-label';
+import { revalidatePath } from 'next/cache';
+
+async function changeAdminPasswordAction(formData: FormData) {
+  'use server';
+
+  const session = adminSession();
+  if (!session) {
+    throw new Error('Not logged in');
+  }
+
+  const password = formData.get('password')?.toString();
+  if (!password) {
+    throw new Error('Missing required field: password');
+  }
+
+  await changeAdminPassword(redis, password);
+  revalidatePath('/admin');
+}
+
+export default async function SettingsPage() {
+  const session = adminSession();
+  if (!session) {
+    throw new Error('Not logged in');
+  }
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>Change admin password</CardTitle>
+        <CardDescription>
+          Enter a password that you will use to login in the future.
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <form action={changeAdminPasswordAction}>
+          <div className="flex flex-col gap-6">
+            <div className="grid gap-2">
+              <Label htmlFor="password">Password</Label>
+              <Input id="password" name="password" type="password" required />
+            </div>
+            <Button>Change Password</Button>
+          </div>
+        </form>
+      </CardContent>
+    </Card>
+  );
+}

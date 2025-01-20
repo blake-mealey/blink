@@ -1,3 +1,5 @@
-export default function AdminPage() {
-  return <div>admin</div>;
+import { redirect } from 'next/navigation';
+
+export default async function AdminPage() {
+  return redirect('/admin/links');
 }
