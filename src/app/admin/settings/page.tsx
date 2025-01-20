@@ -7,9 +7,9 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { redis } from '@/lib/redis';
 import { adminSession, changeAdminPassword } from '@/lib/session';
-import { Label } from '@radix-ui/react-label';
 import { revalidatePath } from 'next/cache';
 
 async function changeAdminPasswordAction(formData: FormData) {

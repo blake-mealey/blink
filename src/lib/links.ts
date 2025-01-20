@@ -16,8 +16,9 @@ export async function listLinks(
   redis: Redis,
   cursor: number | string | undefined
 ): Promise<LinksPage> {
+  // TODO: read to completion
   const [newCursor, fields] = await redis.zscan('@links', cursor ?? 0, {
-    count: 50,
+    count: 1000,
   });
 
   if (fields.length > 0) {

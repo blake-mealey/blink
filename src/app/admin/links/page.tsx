@@ -13,10 +13,10 @@ export default async function LinksPage() {
   const { items } = await listLinks(redis, undefined);
 
   return (
-    <>
+    <div className="grid gap-6">
       <AddLinkForm />
 
       <LinksTable links={items} />
-    </>
+    </div>
   );
 }

@@ -10,7 +10,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Link } from '@/lib/links';
-import { Copy, Trash } from 'lucide-react';
+import { Copy, MoreHorizontal, Trash } from 'lucide-react';
 import { removeLinkAction } from './link-actions';
 import copy from 'copy-to-clipboard';
 import {
@@ -24,61 +24,143 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
+import {
+  flexRender,
+  getCoreRowModel,
+  useReactTable,
+} from '@tanstack/react-table';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 
 const dateFormatter = new Intl.DateTimeFormat();
 
 export function LinksTable({ links }: { links: Link[] }) {
+  const table = useReactTable({
+    data: links,
+    columns: [
+      {
+        accessorKey: 'name',
+        header: 'Name',
+      },
+      {
+        accessorKey: 'url',
+        header: 'URL',
+      },
+      {
+        accessorKey: 'hits',
+        header: 'Hits',
+      },
+      {
+        accessorKey: 'createdAt',
+        header: 'Created',
+        cell: ({ getValue }) => {
+          return dateFormatter.format(new Date(getValue()));
+        },
+      },
+      {
+        id: 'actions',
+        cell: ({ row }) => {
+          return <LinkActions linkName={row.getValue('name')} />;
+        },
+      },
+    ],
+    getCoreRowModel: getCoreRowModel(),
+  });
+
   return (
-    <Table className="mt-4">
-      <TableHeader>
-        <TableRow>
-          <TableHead>Name</TableHead>
-          <TableHead>URL</TableHead>
-          <TableHead>Hits</TableHead>
-          <TableHead>Created</TableHead>
-        </TableRow>
-      </TableHeader>
-      <TableBody>
-        {links.map((link) => {
-          return (
-            <TableRow key={link.name}>
-              <TableCell className="flex items-center gap-2">
-                {link.name}
-                <Button
-                  size="icon"
-                  variant="ghost"
-                  onClick={() => {
-                    copy(new URL(link.name, window.location.origin).toString());
-                  }}
+    <div>
+      <div className="rounded-xl border">
+        <Table>
+          <TableHeader>
+            {table.getHeaderGroups().map((headerGroup) => {
+              return (
+                <TableRow key={headerGroup.id}>
+                  {headerGroup.headers.map((header) => {
+                    return (
+                      <TableHead key={header.id}>
+                        {header.isPlaceholder
+                          ? null
+                          : flexRender(
+                              header.column.columnDef.header,
+                              header.getContext()
+                            )}
+                      </TableHead>
+                    );
+                  })}
+                </TableRow>
+              );
+            })}
+          </TableHeader>
+          <TableBody>
+            {table.getRowModel().rows?.length ? (
+              table.getRowModel().rows.map((row) => {
+                return (
+                  <TableRow key={row.id}>
+                    {row.getVisibleCells().map((cell) => {
+                      return (
+                        <TableCell key={cell.id}>
+                          {flexRender(
+                            cell.column.columnDef.cell,
+                            cell.getContext()
+                          )}
+                        </TableCell>
+                      );
+                    })}
+                  </TableRow>
+                );
+              })
+            ) : (
+              <TableRow>
+                <TableCell
+                  colSpan={table.getAllColumns().length}
+                  className="h-24 text-center"
                 >
-                  <Copy />
-                </Button>
-              </TableCell>
-              <TableCell>{link.url}</TableCell>
-              <TableCell>{link.hits ?? 0}</TableCell>
-              <TableCell className="flex items-center gap-2">
-                {dateFormatter.format(Date.parse(link.createdAt))}
-                <RemoveLinkButton link={link} />
-              </TableCell>
-            </TableRow>
-          );
-        })}
-      </TableBody>
-    </Table>
+                  No links.
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </div>
+    </div>
   );
 }
 
-function RemoveLinkButton({ link }: { link: Link }) {
+function LinkActions({ linkName }: { linkName: string }) {
   return (
     <AlertDialog>
-      <AlertDialogTrigger asChild>
-        <Button size="icon" variant="ghost">
-          <Trash />
-        </Button>
-      </AlertDialogTrigger>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="ghost" className="h-8 w-8 p0">
+            <span className="sr-only">Open menu</span>
+            <MoreHorizontal className="h-4 w-4" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end">
+          <DropdownMenuLabel>Actions</DropdownMenuLabel>
+          <DropdownMenuItem
+            onClick={() =>
+              copy(new URL(linkName, window.location.origin).toString())
+            }
+          >
+            <Copy /> Copy Short URL
+          </DropdownMenuItem>
+          <AlertDialogTrigger asChild>
+            <DropdownMenuItem>
+              <Trash /> Remove
+            </DropdownMenuItem>
+          </AlertDialogTrigger>
+        </DropdownMenuContent>
+      </DropdownMenu>
+
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Remove link?</AlertDialogTitle>
+          <AlertDialogTitle>Remove "{linkName}" link?</AlertDialogTitle>
           <AlertDialogDescription>
             This action cannot be undone. All data related to the link
             (including hits) will be lost.
@@ -87,7 +169,7 @@ function RemoveLinkButton({ link }: { link: Link }) {
         <AlertDialogFooter>
           <AlertDialogCancel>Cancel</AlertDialogCancel>
           <form action={removeLinkAction}>
-            <input type="hidden" name="name" value={link.name} />
+            <input type="hidden" name="name" value={linkName} />
             <AlertDialogAction type="submit">Remove</AlertDialogAction>
           </form>
         </AlertDialogFooter>
