@@ -23,6 +23,7 @@ export function LinksTable({ links }: { links: Link[] }) {
         <TableRow>
           <TableHead>Name</TableHead>
           <TableHead>URL</TableHead>
+          <TableHead>Hits</TableHead>
           <TableHead>Created</TableHead>
         </TableRow>
       </TableHeader>
@@ -43,6 +44,7 @@ export function LinksTable({ links }: { links: Link[] }) {
                 </Button>
               </TableCell>
               <TableCell>{link.url}</TableCell>
+              <TableCell>{link.hits ?? 0}</TableCell>
               <TableCell className="flex items-center gap-2">
                 {dateFormatter.format(Date.parse(link.createdAt))}
 

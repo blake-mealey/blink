@@ -4,6 +4,7 @@ export interface Link {
   name: string;
   url: string;
   createdAt: string;
+  hits?: number;
 }
 
 export interface LinksPage {
@@ -20,9 +21,18 @@ export async function listLinks(
   });
 
   if (fields.length > 0) {
-    const items = await redis.mget<Link[]>(
-      fields.filter((x) => typeof x === 'string')
-    );
+    const [items, hits] = await Promise.all([
+      redis.mget<Link[]>(fields.filter((x) => typeof x === 'string')),
+      redis.mget<number[]>(
+        fields
+          .filter((x) => typeof x === 'string')
+          .map((x) => x.replace(/^@link\//, '@link-hit/'))
+      ),
+    ]);
+    for (let i = 0; i < items.length; i++) {
+      items[i].hits = hits[i] ?? 0;
+    }
+
     return {
       items,
       cursor: newCursor,
@@ -56,4 +66,14 @@ export async function removeLink(redis: Redis, name: string) {
   const key = `@link/${name}`;
   await redis.del(key);
   await redis.zrem('@links', key);
+}
+
+export async function trackLinkHit(redis: Redis, name: string) {
+  const key = `@link-hit/${name}`;
+  await redis.incr(key);
+}
+
+export async function trackLinkMiss(redis: Redis, name: string) {
+  const key = `@link-miss/${name}`;
+  await redis.incr(key);
 }

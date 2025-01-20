@@ -1,4 +1,4 @@
-import { getLink } from '@/lib/links';
+import { getLink, trackLinkHit, trackLinkMiss } from '@/lib/links';
 import { redis } from '@/lib/redis';
 import { notFound, redirect } from 'next/navigation';
 import { track } from '@vercel/analytics/server';
@@ -13,6 +13,7 @@ export async function GET(
     track('link-not-found', {
       linkName: name,
     });
+    trackLinkMiss(redis, name);
     return notFound();
   }
 
@@ -20,6 +21,7 @@ export async function GET(
     linkName: name,
     linkUrl: link.url,
   });
+  trackLinkHit(redis, name);
 
   return redirect(link.url);
 }
