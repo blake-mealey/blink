@@ -2,7 +2,6 @@ import { cookies } from 'next/headers';
 import Iron, { SealOptions } from '@hapi/iron';
 import { Redis } from '@upstash/redis';
 import bcrypt from 'bcrypt';
-import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 
 const SESSION_COOKIE_NAME = 'blink_admin_sess';
