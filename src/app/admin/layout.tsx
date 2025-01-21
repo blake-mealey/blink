@@ -11,6 +11,7 @@ import {
 import { adminSession, endAdminSession } from '@/lib/session';
 import Link from 'next/link';
 import { AdminLogin } from './admin-login';
+import { LinkIcon, LogOutIcon, WrenchIcon } from 'lucide-react';
 
 async function logoutAction() {
   'use server';
@@ -36,7 +37,10 @@ export default async function AdminLayout({
           <SidebarMenu>
             <SidebarMenuItem>
               <SidebarMenuButton asChild>
-                <Link href="/admin/links">Links</Link>
+                <Link href="/admin/links">
+                  <LinkIcon />
+                  <span>Links</span>
+                </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
           </SidebarMenu>
@@ -44,7 +48,10 @@ export default async function AdminLayout({
           <SidebarMenu>
             <SidebarMenuItem>
               <SidebarMenuButton asChild>
-                <Link href="/admin/settings">Settings</Link>
+                <Link href="/admin/settings">
+                  <WrenchIcon />
+                  <span>Settings</span>
+                </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
           </SidebarMenu>
@@ -54,14 +61,19 @@ export default async function AdminLayout({
           <SidebarMenu>
             <SidebarMenuItem>
               <form action={logoutAction}>
-                <SidebarMenuButton>Logout</SidebarMenuButton>
+                <SidebarMenuButton>
+                  <LogOutIcon />
+                  <span>Logout</span>
+                </SidebarMenuButton>
               </form>
             </SidebarMenuItem>
           </SidebarMenu>
         </SidebarFooter>
       </Sidebar>
 
-      <SidebarInset className="p-4">{children}</SidebarInset>
+      <SidebarInset className="p-4">
+        <main className="max-w-screen-lg">{children}</main>
+      </SidebarInset>
     </SidebarProvider>
   );
 }

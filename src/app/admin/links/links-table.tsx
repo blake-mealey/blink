@@ -10,7 +10,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Link } from '@/lib/links';
-import { Copy, MoreHorizontal, Trash } from 'lucide-react';
+import { CopyIcon, MoreHorizontalIcon, TrashIcon } from 'lucide-react';
 import { removeLinkAction } from './link-actions';
 import copy from 'copy-to-clipboard';
 import {
@@ -138,7 +138,7 @@ function LinkActions({ linkName }: { linkName: string }) {
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" className="h-8 w-8 p0">
             <span className="sr-only">Open menu</span>
-            <MoreHorizontal className="h-4 w-4" />
+            <MoreHorizontalIcon className="h-4 w-4" />
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
@@ -148,11 +148,11 @@ function LinkActions({ linkName }: { linkName: string }) {
               copy(new URL(linkName, window.location.origin).toString())
             }
           >
-            <Copy /> Copy Short URL
+            <CopyIcon /> Copy Short URL
           </DropdownMenuItem>
           <AlertDialogTrigger asChild>
             <DropdownMenuItem>
-              <Trash /> Remove
+              <TrashIcon /> Remove
             </DropdownMenuItem>
           </AlertDialogTrigger>
         </DropdownMenuContent>
