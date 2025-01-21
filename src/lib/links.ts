@@ -9,25 +9,34 @@ export interface Link {
 
 export interface LinksPage {
   items: Link[];
-  cursor: string | number | undefined;
+  page: number;
+  pageSize: number;
+  itemsCount: number;
+  itemsRemainingCount: number;
+  pagesCount: number;
+  pagesRemainingCount: number;
 }
 
 export async function listLinks(
   redis: Redis,
-  cursor: number | string | undefined
+  page: number,
+  pageSize: number
 ): Promise<LinksPage> {
-  // TODO: read to completion
-  const [newCursor, fields] = await redis.zscan('@links', cursor ?? 0, {
-    count: 1000,
-  });
+  const start = page * pageSize;
+  const end = start + pageSize - 1;
 
-  if (fields.length > 0) {
+  const itemsCount = await redis.zcard('@links');
+  const itemsRemainingCount = Math.max(0, itemsCount - end - 1);
+  const pagesCount = Math.ceil(itemsCount / pageSize);
+  const pagesRemainingCount = Math.max(0, pagesCount - page - 1);
+
+  const keys = await redis.zrange<string[]>('@links', start, end);
+
+  if (keys.length > 0) {
     const [items, hits] = await Promise.all([
-      redis.mget<Link[]>(fields.filter((x) => typeof x === 'string')),
+      redis.mget<Link[]>(keys),
       redis.mget<number[]>(
-        fields
-          .filter((x) => typeof x === 'string')
-          .map((x) => x.replace(/^@link\//, '@link-hit/'))
+        keys.map((x) => x.replace(/^@link\//, '@link-hit/'))
       ),
     ]);
     for (let i = 0; i < items.length; i++) {
@@ -36,13 +45,23 @@ export async function listLinks(
 
     return {
       items,
-      cursor: newCursor,
+      page,
+      pageSize,
+      itemsCount,
+      itemsRemainingCount,
+      pagesCount,
+      pagesRemainingCount,
     };
   }
 
   return {
     items: [],
-    cursor: undefined,
+    page,
+    pageSize,
+    itemsCount,
+    itemsRemainingCount,
+    pagesCount,
+    pagesRemainingCount,
   };
 }
 

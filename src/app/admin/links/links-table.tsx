@@ -9,7 +9,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { Link } from '@/lib/links';
+import { LinksPage } from '@/lib/links';
 import { CopyIcon, MoreHorizontalIcon, TrashIcon } from 'lucide-react';
 import { removeLinkAction } from './link-actions';
 import copy from 'copy-to-clipboard';
@@ -27,6 +27,7 @@ import {
 import {
   flexRender,
   getCoreRowModel,
+  getPaginationRowModel,
   useReactTable,
 } from '@tanstack/react-table';
 import {
@@ -36,12 +37,16 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { usePathname, useRouter } from 'next/navigation';
 
 const dateFormatter = new Intl.DateTimeFormat();
 
-export function LinksTable({ links }: { links: Link[] }) {
+export function LinksTable({ linksPage }: { linksPage: LinksPage }) {
+  const pathname = usePathname();
+  const router = useRouter();
+
   const table = useReactTable({
-    data: links,
+    data: linksPage.items,
     columns: [
       {
         accessorKey: 'name',
@@ -70,7 +75,21 @@ export function LinksTable({ links }: { links: Link[] }) {
       },
     ],
     getCoreRowModel: getCoreRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+    initialState: {
+      pagination: {
+        pageIndex: linksPage.page,
+        pageSize: linksPage.pageSize,
+      },
+    },
+    manualPagination: true,
+    rowCount: linksPage.itemsCount,
   });
+
+  const setPage = (newPage: number) => {
+    const search = new URLSearchParams({ page: newPage.toString() });
+    router.push(pathname + '?' + search.toString());
+  };
 
   return (
     <div>
@@ -126,6 +145,25 @@ export function LinksTable({ links }: { links: Link[] }) {
             )}
           </TableBody>
         </Table>
+      </div>
+
+      <div className="flex items-center justify-end space-x-2 py-4">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => setPage(linksPage.page - 1)}
+          disabled={linksPage.page === 0}
+        >
+          Previous
+        </Button>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => setPage(linksPage.page + 1)}
+          disabled={linksPage.page === linksPage.pagesCount - 1}
+        >
+          Next
+        </Button>
       </div>
     </div>
   );
