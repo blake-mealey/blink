@@ -1,3 +1,11 @@
+import { AppContainer } from '@/components/app-container';
+import { AppHeader } from '@/components/app-header';
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbList,
+  BreadcrumbPage,
+} from '@/components/ui/breadcrumb';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -35,6 +43,26 @@ export default async function SettingsPage() {
     throw new Error('Not logged in');
   }
 
+  return (
+    <>
+      <AppHeader>
+        <Breadcrumb>
+          <BreadcrumbList>
+            <BreadcrumbItem>
+              <BreadcrumbPage>Settings</BreadcrumbPage>
+            </BreadcrumbItem>
+          </BreadcrumbList>
+        </Breadcrumb>
+      </AppHeader>
+
+      <AppContainer className="grid gap-6">
+        <ChangeAdminPassword />
+      </AppContainer>
+    </>
+  );
+}
+
+function ChangeAdminPassword() {
   return (
     <Card>
       <CardHeader>

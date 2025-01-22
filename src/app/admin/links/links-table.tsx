@@ -51,10 +51,24 @@ export function LinksTable({ linksPage }: { linksPage: LinksPage }) {
       {
         accessorKey: 'name',
         header: 'Name',
+        cell: ({ getValue }) => {
+          return (
+            <div className="max-w-40 lg:max-w-96 text-nowrap overflow-hidden text-ellipsis">
+              {getValue()}
+            </div>
+          );
+        },
       },
       {
         accessorKey: 'url',
         header: 'URL',
+        cell: ({ getValue }) => {
+          return (
+            <div className="max-w-10 md:max-w-32 lg:max-w-96 text-nowrap overflow-hidden text-ellipsis">
+              {getValue()}
+            </div>
+          );
+        },
       },
       {
         accessorKey: 'hits',

@@ -7,11 +7,15 @@ import {
   SidebarFooter,
   SidebarInset,
   Sidebar,
+  SidebarTrigger,
+  SidebarGroup,
+  SidebarGroupLabel,
 } from '@/components/ui/sidebar';
 import { adminSession, endAdminSession } from '@/lib/session';
 import Link from 'next/link';
 import { AdminLogin } from './admin-login';
 import { LinkIcon, LogOutIcon, WrenchIcon } from 'lucide-react';
+import { Separator } from '@/components/ui/separator';
 
 async function logoutAction() {
   'use server';
@@ -34,27 +38,31 @@ export default async function AdminLayout({
     <SidebarProvider>
       <Sidebar variant="inset">
         <SidebarContent>
-          <SidebarMenu>
-            <SidebarMenuItem>
-              <SidebarMenuButton asChild>
-                <Link href="/admin/links">
-                  <LinkIcon />
-                  <span>Links</span>
-                </Link>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-          </SidebarMenu>
+          <SidebarGroup>
+            <SidebarGroupLabel>Blink</SidebarGroupLabel>
 
-          <SidebarMenu>
-            <SidebarMenuItem>
-              <SidebarMenuButton asChild>
-                <Link href="/admin/settings">
-                  <WrenchIcon />
-                  <span>Settings</span>
-                </Link>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-          </SidebarMenu>
+            <SidebarMenu>
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild>
+                  <Link href="/admin/links">
+                    <LinkIcon />
+                    <span>Links</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            </SidebarMenu>
+
+            <SidebarMenu>
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild>
+                  <Link href="/admin/settings">
+                    <WrenchIcon />
+                    <span>Settings</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            </SidebarMenu>
+          </SidebarGroup>
         </SidebarContent>
 
         <SidebarFooter>
@@ -71,9 +79,7 @@ export default async function AdminLayout({
         </SidebarFooter>
       </Sidebar>
 
-      <SidebarInset className="p-4">
-        <main className="max-w-screen-lg">{children}</main>
-      </SidebarInset>
+      <SidebarInset>{children}</SidebarInset>
     </SidebarProvider>
   );
 }

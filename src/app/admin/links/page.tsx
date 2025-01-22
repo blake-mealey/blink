@@ -3,6 +3,14 @@ import { redis } from '@/lib/redis';
 import { AddLinkForm } from './add-link-form';
 import { adminSession } from '@/lib/session';
 import { LinksTable } from './links-table';
+import { AppHeader } from '@/components/app-header';
+import { AppContainer } from '@/components/app-container';
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbList,
+  BreadcrumbPage,
+} from '@/components/ui/breadcrumb';
 
 export default async function LinksPage({
   searchParams,
@@ -18,10 +26,21 @@ export default async function LinksPage({
   const linksPage = await listLinks(redis, Number(page ?? 0), 50);
 
   return (
-    <div className="grid gap-6">
-      <AddLinkForm />
+    <>
+      <AppHeader>
+        <Breadcrumb>
+          <BreadcrumbList>
+            <BreadcrumbItem>
+              <BreadcrumbPage>Links</BreadcrumbPage>
+            </BreadcrumbItem>
+          </BreadcrumbList>
+        </Breadcrumb>
+      </AppHeader>
 
-      <LinksTable linksPage={linksPage} />
-    </div>
+      <AppContainer className="grid gap-6">
+        <AddLinkForm />
+        <LinksTable linksPage={linksPage} />
+      </AppContainer>
+    </>
   );
 }
