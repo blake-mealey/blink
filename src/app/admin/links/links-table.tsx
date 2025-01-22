@@ -9,7 +9,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { LinksPage } from '@/lib/links';
+import { Link, LinksPage } from '@/lib/links';
 import { CopyIcon, MoreHorizontalIcon, TrashIcon } from 'lucide-react';
 import { removeLinkAction } from './link-actions';
 import copy from 'copy-to-clipboard';
@@ -25,6 +25,7 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 import {
+  ColumnDef,
   flexRender,
   getCoreRowModel,
   getPaginationRowModel,
@@ -38,56 +39,64 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { usePathname, useRouter } from 'next/navigation';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 const dateFormatter = new Intl.DateTimeFormat();
+
+const nameColumn: ColumnDef<Link, any> = {
+  accessorKey: 'name',
+  header: 'Name',
+  cell: ({ getValue }) => {
+    return (
+      <div className="max-w-[100px] sm:max-w-[200px] md:max-w-[130px] lg:max-w-[200px] xl:max-w-[220px] text-nowrap overflow-hidden text-ellipsis">
+        {getValue()}
+      </div>
+    );
+  },
+};
+
+const urlColumn: ColumnDef<Link, any> = {
+  accessorKey: 'url',
+  header: 'URL',
+  cell: ({ getValue }) => {
+    return (
+      <div className="max-w-[100px] sm:max-w-[320px] md:max-w-[140px] lg:max-w-[320px] xl:max-w-[550px] text-nowrap overflow-hidden text-ellipsis">
+        {getValue()}
+      </div>
+    );
+  },
+};
+
+const hitsColumn: ColumnDef<Link, any> = {
+  accessorKey: 'hits',
+  header: 'Hits',
+};
+
+const createdAtColumn: ColumnDef<Link, any> = {
+  accessorKey: 'createdAt',
+  header: 'Created',
+  cell: ({ getValue }) => {
+    return dateFormatter.format(new Date(getValue()));
+  },
+};
+
+const actionsColumn: ColumnDef<Link, any> = {
+  id: 'actions',
+  cell: ({ row }) => {
+    return <LinkActions linkName={row.getValue('name')} />;
+  },
+};
 
 export function LinksTable({ linksPage }: { linksPage: LinksPage }) {
   const pathname = usePathname();
   const router = useRouter();
+  const isMobile = useIsMobile();
 
   const table = useReactTable({
     data: linksPage.items,
-    columns: [
-      {
-        accessorKey: 'name',
-        header: 'Name',
-        cell: ({ getValue }) => {
-          return (
-            <div className="max-w-40 lg:max-w-96 text-nowrap overflow-hidden text-ellipsis">
-              {getValue()}
-            </div>
-          );
-        },
-      },
-      {
-        accessorKey: 'url',
-        header: 'URL',
-        cell: ({ getValue }) => {
-          return (
-            <div className="max-w-10 md:max-w-32 lg:max-w-96 text-nowrap overflow-hidden text-ellipsis">
-              {getValue()}
-            </div>
-          );
-        },
-      },
-      {
-        accessorKey: 'hits',
-        header: 'Hits',
-      },
-      {
-        accessorKey: 'createdAt',
-        header: 'Created',
-        cell: ({ getValue }) => {
-          return dateFormatter.format(new Date(getValue()));
-        },
-      },
-      {
-        id: 'actions',
-        cell: ({ row }) => {
-          return <LinkActions linkName={row.getValue('name')} />;
-        },
-      },
-    ],
+    columns: isMobile
+      ? [nameColumn, urlColumn, actionsColumn]
+      : [nameColumn, urlColumn, hitsColumn, createdAtColumn, actionsColumn],
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     initialState: {
@@ -109,6 +118,21 @@ export function LinksTable({ linksPage }: { linksPage: LinksPage }) {
     <div>
       <div className="rounded-xl border">
         <Table>
+          {isMobile ? (
+            <colgroup>
+              <col className="w-[220px]" />
+              <col className="w-[550px]" />
+              <col className="w-0" />
+            </colgroup>
+          ) : (
+            <colgroup>
+              <col className="w-[220px]" />
+              <col className="w-[550px]" />
+              <col className="w-0" />
+              <col className="w-0" />
+              <col className="w-0" />
+            </colgroup>
+          )}
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => {
               return (
