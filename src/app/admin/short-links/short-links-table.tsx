@@ -41,6 +41,7 @@ import {
 import { usePathname, useRouter } from 'next/navigation';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Favicon, FaviconProps } from '@/lib/favicons';
+import { toast } from 'sonner';
 
 const dateFormatter = new Intl.DateTimeFormat();
 
@@ -232,9 +233,14 @@ function LinkActions({ linkName }: { linkName: string }) {
         <DropdownMenuContent align="end">
           <DropdownMenuLabel>Actions</DropdownMenuLabel>
           <DropdownMenuItem
-            onClick={() =>
-              copy(new URL(linkName, window.location.origin).toString())
-            }
+            onClick={() => {
+              const shortUrl = new URL(linkName, window.location.origin);
+              copy(shortUrl.toString(), {
+                onCopy: () => {
+                  toast.success('Copied to clipboard!');
+                },
+              });
+            }}
           >
             <CopyIcon /> Copy Short URL
           </DropdownMenuItem>
