@@ -13,7 +13,7 @@ import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Separator } from '@/components/ui/separator';
 import { useState } from 'react';
-import { addShortLinkAction } from './short-link-actions';
+import { addShortLinkAction } from './short-links-actions';
 
 export function AddShortLinkForm() {
   const [nameType, setNameType] = useState('random');

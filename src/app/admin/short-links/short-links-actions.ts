@@ -42,12 +42,10 @@ export async function addShortLinkAction(formData: FormData) {
     name,
     createdAt: new Date().toISOString(),
   });
-  revalidatePath('/admin/links');
+  revalidatePath('/admin/short-links');
 }
 
 export async function removeShortLinkAction(formData: FormData) {
-  'use server';
-
   const session = adminSession();
   if (!session) {
     throw new Error('Not logged in');
@@ -59,5 +57,5 @@ export async function removeShortLinkAction(formData: FormData) {
   }
 
   await removeShortLink(redis, name);
-  revalidatePath('/admin/links');
+  revalidatePath('/admin/short-links');
 }

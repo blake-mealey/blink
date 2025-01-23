@@ -1,19 +1,19 @@
-import { listShortLinks } from '@/lib/short-links';
-import { redis } from '@/lib/redis';
-import { AddShortLinkForm } from './add-short-link-form';
-import { adminSession } from '@/lib/session';
-import { ShortLinksTable } from './short-links-table';
-import { AppHeader } from '@/components/app-header';
 import { AppContainer } from '@/components/app-container';
+import { AppHeader } from '@/components/app-header';
 import {
   Breadcrumb,
-  BreadcrumbItem,
   BreadcrumbList,
+  BreadcrumbItem,
   BreadcrumbPage,
 } from '@/components/ui/breadcrumb';
+import { AddBookmarkForm } from './add-bookmark-form';
+import { BookmarksTable } from './bookmarks-table';
+import { adminSession } from '@/lib/session';
+import { listBookmarks } from '@/lib/bookmarks';
+import { redis } from '@/lib/redis';
 import { FaviconProps, getFaviconProps } from '@/lib/favicons';
 
-export default async function LinksPage({
+export default async function BookmarksPage({
   searchParams,
 }: {
   searchParams: Promise<{ page: string | undefined }>;
@@ -24,9 +24,9 @@ export default async function LinksPage({
   }
 
   const { page } = await searchParams;
-  const linksPage = await listShortLinks(redis, Number(page ?? 0), 50);
+  const bookmarksPage = await listBookmarks(redis, Number(page ?? 0), 50);
 
-  const urls = Array.from(new Set(linksPage.items.map((x) => x.url)));
+  const urls = Array.from(new Set(bookmarksPage.items.map((x) => x.url)));
   const favicons = Object.fromEntries(
     await Promise.all(
       urls.map(
@@ -44,15 +44,15 @@ export default async function LinksPage({
         <Breadcrumb>
           <BreadcrumbList>
             <BreadcrumbItem>
-              <BreadcrumbPage>Short links</BreadcrumbPage>
+              <BreadcrumbPage>Bookmarks</BreadcrumbPage>
             </BreadcrumbItem>
           </BreadcrumbList>
         </Breadcrumb>
       </AppHeader>
 
       <AppContainer className="grid gap-6">
-        <AddShortLinkForm />
-        <ShortLinksTable linksPage={linksPage} favicons={favicons} />
+        <AddBookmarkForm />
+        <BookmarksTable bookmarksPage={bookmarksPage} favicons={favicons} />
       </AppContainer>
     </>
   );

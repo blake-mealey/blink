@@ -1,55 +1,56 @@
 'use client';
 
+import {
+  AlertDialogHeader,
+  AlertDialogFooter,
+} from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
   TableHeader,
   TableRow,
+  TableHead,
+  TableBody,
+  TableCell,
+  Table,
 } from '@/components/ui/table';
-import { ShortLink, ShortLinksPage } from '@/lib/short-links';
-import { CopyIcon, MoreHorizontalIcon, TrashIcon } from 'lucide-react';
-import { removeShortLinkAction } from './short-links-actions';
-import copy from 'copy-to-clipboard';
+import { useIsMobile } from '@/hooks/use-mobile';
+import { BookmarksPage } from '@/lib/bookmarks';
+import { Favicon, FaviconProps } from '@/lib/favicons';
+import { ShortLink } from '@/lib/short-links';
 import {
   AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
   AlertDialogTrigger,
+  AlertDialogContent,
+  AlertDialogTitle,
+  AlertDialogDescription,
+  AlertDialogCancel,
+  AlertDialogAction,
 } from '@/components/ui/alert-dialog';
 import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuLabel,
+  DropdownMenuItem,
+} from '@/components/ui/dropdown-menu';
+import {
   ColumnDef,
-  flexRender,
+  useReactTable,
   getCoreRowModel,
   getPaginationRowModel,
-  useReactTable,
+  flexRender,
 } from '@tanstack/react-table';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+import { MoreHorizontalIcon, TrashIcon } from 'lucide-react';
 import { usePathname, useRouter } from 'next/navigation';
-import { useIsMobile } from '@/hooks/use-mobile';
-import { Favicon, FaviconProps } from '@/lib/favicons';
-import { toast } from 'sonner';
+import { removeBookmarkAction } from './bookmarks-actions';
 
 const dateFormatter = new Intl.DateTimeFormat();
 
-export function ShortLinksTable({
-  linksPage,
+export function BookmarksTable({
+  bookmarksPage,
   favicons,
 }: {
-  linksPage: ShortLinksPage;
+  bookmarksPage: BookmarksPage;
   favicons: Record<string, FaviconProps>;
 }) {
   const pathname = usePathname();
@@ -61,12 +62,17 @@ export function ShortLinksTable({
     header: 'Name',
     cell: ({ getValue, row }) => {
       return (
-        <div className="flex items-center gap-2">
+        <a
+          className="flex items-center gap-2"
+          href={row.getValue('url')}
+          target="_blank"
+          rel="noopener"
+        >
           <Favicon {...favicons[row.getValue('url') as string]} />
           <div className="max-w-[100px] sm:max-w-[200px] md:max-w-[130px] lg:max-w-[200px] xl:max-w-[220px] text-nowrap overflow-hidden text-ellipsis">
             {getValue()}
           </div>
-        </div>
+        </a>
       );
     },
   };
@@ -101,12 +107,17 @@ export function ShortLinksTable({
   const actionsColumn: ColumnDef<ShortLink, any> = {
     id: 'actions',
     cell: ({ row }) => {
-      return <LinkActions linkName={row.getValue('name')} />;
+      return (
+        <LinkActions
+          bookmarkName={row.getValue('name')}
+          bookmarkUrl={row.getValue('url')}
+        />
+      );
     },
   };
 
   const table = useReactTable({
-    data: linksPage.items,
+    data: bookmarksPage.items,
     columns: isMobile
       ? [nameColumn, urlColumn, actionsColumn]
       : [nameColumn, urlColumn, hitsColumn, createdAtColumn, actionsColumn],
@@ -114,12 +125,12 @@ export function ShortLinksTable({
     getPaginationRowModel: getPaginationRowModel(),
     initialState: {
       pagination: {
-        pageIndex: linksPage.page,
-        pageSize: linksPage.pageSize,
+        pageIndex: bookmarksPage.page,
+        pageSize: bookmarksPage.pageSize,
       },
     },
     manualPagination: true,
-    rowCount: linksPage.itemsCount,
+    rowCount: bookmarksPage.itemsCount,
   });
 
   const setPage = (newPage: number) => {
@@ -190,7 +201,7 @@ export function ShortLinksTable({
                   colSpan={table.getAllColumns().length}
                   className="h-24 text-center"
                 >
-                  No short links.
+                  No bookmarks.
                 </TableCell>
               </TableRow>
             )}
@@ -202,16 +213,16 @@ export function ShortLinksTable({
         <Button
           variant="outline"
           size="sm"
-          onClick={() => setPage(linksPage.page - 1)}
-          disabled={linksPage.page === 0}
+          onClick={() => setPage(bookmarksPage.page - 1)}
+          disabled={bookmarksPage.page === 0}
         >
           Previous
         </Button>
         <Button
           variant="outline"
           size="sm"
-          onClick={() => setPage(linksPage.page + 1)}
-          disabled={linksPage.page === linksPage.pagesCount - 1}
+          onClick={() => setPage(bookmarksPage.page + 1)}
+          disabled={bookmarksPage.page === bookmarksPage.pagesCount - 1}
         >
           Next
         </Button>
@@ -220,7 +231,13 @@ export function ShortLinksTable({
   );
 }
 
-function LinkActions({ linkName }: { linkName: string }) {
+function LinkActions({
+  bookmarkName,
+  bookmarkUrl,
+}: {
+  bookmarkName: string;
+  bookmarkUrl: string;
+}) {
   return (
     <AlertDialog>
       <DropdownMenu>
@@ -232,18 +249,6 @@ function LinkActions({ linkName }: { linkName: string }) {
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
           <DropdownMenuLabel>Actions</DropdownMenuLabel>
-          <DropdownMenuItem
-            onClick={() => {
-              const shortUrl = new URL(linkName, window.location.origin);
-              copy(shortUrl.toString(), {
-                onCopy: () => {
-                  toast.success('Copied to clipboard!');
-                },
-              });
-            }}
-          >
-            <CopyIcon /> Copy Short URL
-          </DropdownMenuItem>
           <AlertDialogTrigger asChild>
             <DropdownMenuItem>
               <TrashIcon /> Remove
@@ -254,16 +259,16 @@ function LinkActions({ linkName }: { linkName: string }) {
 
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Remove "{linkName}" link?</AlertDialogTitle>
+          <AlertDialogTitle>Remove "{bookmarkName}" bookmark?</AlertDialogTitle>
           <AlertDialogDescription>
-            This action cannot be undone. All data related to the link
+            This action cannot be undone. All data related to the bookmark
             (including hits) will be lost.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel>Cancel</AlertDialogCancel>
-          <form action={removeShortLinkAction}>
-            <input type="hidden" name="name" value={linkName} />
+          <form action={removeBookmarkAction}>
+            <input type="hidden" name="url" value={bookmarkUrl} />
             <AlertDialogAction type="submit">Remove</AlertDialogAction>
           </form>
         </AlertDialogFooter>

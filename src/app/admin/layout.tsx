@@ -14,7 +14,7 @@ import {
 import { adminSession, endAdminSession } from '@/lib/session';
 import Link from 'next/link';
 import { AdminLogin } from './admin-login';
-import { LinkIcon, LogOutIcon, WrenchIcon } from 'lucide-react';
+import { BookmarkIcon, LinkIcon, LogOutIcon, WrenchIcon } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 
 async function logoutAction() {
@@ -40,6 +40,17 @@ export default async function AdminLayout({
         <SidebarContent>
           <SidebarGroup>
             <SidebarGroupLabel>Blink</SidebarGroupLabel>
+
+            <SidebarMenu>
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild>
+                  <Link href="/admin/bookmarks">
+                    <BookmarkIcon />
+                    <span>Bookmarks</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            </SidebarMenu>
 
             <SidebarMenu>
               <SidebarMenuItem>
