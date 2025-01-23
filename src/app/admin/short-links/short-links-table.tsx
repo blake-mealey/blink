@@ -40,57 +40,69 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { usePathname, useRouter } from 'next/navigation';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { Favicon, FaviconProps } from '@/lib/favicons';
 
 const dateFormatter = new Intl.DateTimeFormat();
 
-const nameColumn: ColumnDef<ShortLink, any> = {
-  accessorKey: 'name',
-  header: 'Name',
-  cell: ({ getValue }) => {
-    return (
-      <div className="max-w-[100px] sm:max-w-[200px] md:max-w-[130px] lg:max-w-[200px] xl:max-w-[220px] text-nowrap overflow-hidden text-ellipsis">
-        {getValue()}
-      </div>
-    );
-  },
-};
-
-const urlColumn: ColumnDef<ShortLink, any> = {
-  accessorKey: 'url',
-  header: 'URL',
-  cell: ({ getValue }) => {
-    return (
-      <div className="max-w-[100px] sm:max-w-[320px] md:max-w-[140px] lg:max-w-[320px] xl:max-w-[550px] text-nowrap overflow-hidden text-ellipsis">
-        {getValue()}
-      </div>
-    );
-  },
-};
-
-const hitsColumn: ColumnDef<ShortLink, any> = {
-  accessorKey: 'hits',
-  header: 'Hits',
-};
-
-const createdAtColumn: ColumnDef<ShortLink, any> = {
-  accessorKey: 'createdAt',
-  header: 'Created',
-  cell: ({ getValue }) => {
-    return dateFormatter.format(new Date(getValue()));
-  },
-};
-
-const actionsColumn: ColumnDef<ShortLink, any> = {
-  id: 'actions',
-  cell: ({ row }) => {
-    return <LinkActions linkName={row.getValue('name')} />;
-  },
-};
-
-export function ShortLinksTable({ linksPage }: { linksPage: ShortLinksPage }) {
+export function ShortLinksTable({
+  linksPage,
+  favicons,
+}: {
+  linksPage: ShortLinksPage;
+  favicons: Record<string, FaviconProps>;
+}) {
   const pathname = usePathname();
   const router = useRouter();
   const isMobile = useIsMobile();
+
+  const nameColumn: ColumnDef<ShortLink, any> = {
+    accessorKey: 'name',
+    header: 'Name',
+    cell: ({ getValue, row }) => {
+      return (
+        <div className="flex items-center gap-2">
+          <Favicon {...favicons[row.getValue('url') as string]} />
+          <div className="max-w-[100px] sm:max-w-[200px] md:max-w-[130px] lg:max-w-[200px] xl:max-w-[220px] text-nowrap overflow-hidden text-ellipsis">
+            {getValue()}
+          </div>
+        </div>
+      );
+    },
+  };
+
+  const urlColumn: ColumnDef<ShortLink, any> = {
+    accessorKey: 'url',
+    header: 'URL',
+    cell: ({ getValue }) => {
+      return (
+        <div className="flex items-center gap-2">
+          <span className="max-w-[100px] sm:max-w-[320px] md:max-w-[140px] lg:max-w-[320px] xl:max-w-[550px] text-nowrap overflow-hidden text-ellipsis">
+            {getValue()}
+          </span>
+        </div>
+      );
+    },
+  };
+
+  const hitsColumn: ColumnDef<ShortLink, any> = {
+    accessorKey: 'hits',
+    header: 'Hits',
+  };
+
+  const createdAtColumn: ColumnDef<ShortLink, any> = {
+    accessorKey: 'createdAt',
+    header: 'Created',
+    cell: ({ getValue }) => {
+      return dateFormatter.format(new Date(getValue()));
+    },
+  };
+
+  const actionsColumn: ColumnDef<ShortLink, any> = {
+    id: 'actions',
+    cell: ({ row }) => {
+      return <LinkActions linkName={row.getValue('name')} />;
+    },
+  };
 
   const table = useReactTable({
     data: linksPage.items,

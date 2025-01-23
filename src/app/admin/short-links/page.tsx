@@ -11,6 +11,7 @@ import {
   BreadcrumbList,
   BreadcrumbPage,
 } from '@/components/ui/breadcrumb';
+import { FaviconProps, getFaviconProps } from '@/lib/favicons';
 
 export default async function LinksPage({
   searchParams,
@@ -24,6 +25,18 @@ export default async function LinksPage({
 
   const { page } = await searchParams;
   const linksPage = await listShortLinks(redis, Number(page ?? 0), 50);
+
+  const urls = Array.from(new Set(linksPage.items.map((x) => x.url)));
+  const favicons = Object.fromEntries(
+    await Promise.all(
+      urls.map(
+        async (x): Promise<[string, FaviconProps]> => [
+          x,
+          await getFaviconProps(x, 16),
+        ]
+      )
+    )
+  );
 
   return (
     <>
@@ -39,7 +52,7 @@ export default async function LinksPage({
 
       <AppContainer className="grid gap-6">
         <AddShortLinkForm />
-        <ShortLinksTable linksPage={linksPage} />
+        <ShortLinksTable linksPage={linksPage} favicons={favicons} />
       </AppContainer>
     </>
   );
