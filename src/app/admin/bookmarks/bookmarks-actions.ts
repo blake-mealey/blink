@@ -1,6 +1,6 @@
 'use server';
 
-import { addBookmark, removeBookmark } from '@/lib/bookmarks';
+import { addBookmark, removeBookmark, trackBookmarkHit } from '@/lib/bookmarks';
 import { redis } from '@/lib/redis';
 import { adminSession } from '@/lib/session';
 import { revalidatePath } from 'next/cache';
@@ -41,5 +41,15 @@ export async function removeBookmarkAction(formData: FormData) {
   }
 
   await removeBookmark(redis, url);
+  revalidatePath('/admin/bookmarks');
+}
+
+export async function trackBookmarkHitAction(url: string) {
+  const session = adminSession();
+  if (!session) {
+    throw new Error('Not logged in');
+  }
+
+  await trackBookmarkHit(redis, url);
   revalidatePath('/admin/bookmarks');
 }

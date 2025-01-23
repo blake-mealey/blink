@@ -12,6 +12,7 @@ import { adminSession } from '@/lib/session';
 import { listBookmarks } from '@/lib/bookmarks';
 import { redis } from '@/lib/redis';
 import { FaviconProps, getFaviconProps } from '@/lib/favicons';
+import { BookmarksList } from './bookmarks-list';
 
 export default async function BookmarksPage({
   searchParams,
@@ -52,7 +53,8 @@ export default async function BookmarksPage({
 
       <AppContainer className="grid gap-6">
         <AddBookmarkForm />
-        <BookmarksTable bookmarksPage={bookmarksPage} favicons={favicons} />
+        <BookmarksList bookmarks={bookmarksPage.items} favicons={favicons} />
+        {/* <BookmarksTable bookmarksPage={bookmarksPage} favicons={favicons} /> */}
       </AppContainer>
     </>
   );
