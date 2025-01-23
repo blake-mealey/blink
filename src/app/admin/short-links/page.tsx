@@ -1,8 +1,8 @@
-import { listLinks } from '@/lib/links';
+import { listShortLinks } from '@/lib/short-links';
 import { redis } from '@/lib/redis';
-import { AddLinkForm } from './add-link-form';
+import { AddShortLinkForm } from './add-link-form';
 import { adminSession } from '@/lib/session';
-import { LinksTable } from './links-table';
+import { ShortLinksTable } from './short-links-table';
 import { AppHeader } from '@/components/app-header';
 import { AppContainer } from '@/components/app-container';
 import {
@@ -23,7 +23,7 @@ export default async function LinksPage({
   }
 
   const { page } = await searchParams;
-  const linksPage = await listLinks(redis, Number(page ?? 0), 50);
+  const linksPage = await listShortLinks(redis, Number(page ?? 0), 50);
 
   return (
     <>
@@ -31,15 +31,15 @@ export default async function LinksPage({
         <Breadcrumb>
           <BreadcrumbList>
             <BreadcrumbItem>
-              <BreadcrumbPage>Links</BreadcrumbPage>
+              <BreadcrumbPage>Short links</BreadcrumbPage>
             </BreadcrumbItem>
           </BreadcrumbList>
         </Breadcrumb>
       </AppHeader>
 
       <AppContainer className="grid gap-6">
-        <AddLinkForm />
-        <LinksTable linksPage={linksPage} />
+        <AddShortLinkForm />
+        <ShortLinksTable linksPage={linksPage} />
       </AppContainer>
     </>
   );

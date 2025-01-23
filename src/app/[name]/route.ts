@@ -1,4 +1,8 @@
-import { getLink, trackLinkHit, trackLinkMiss } from '@/lib/links';
+import {
+  getShortLink,
+  trackShortLinkHit,
+  trackShortLinkMiss,
+} from '@/lib/short-links';
 import { redis } from '@/lib/redis';
 import { notFound, redirect } from 'next/navigation';
 import { track } from '@vercel/analytics/server';
@@ -8,12 +12,12 @@ export async function GET(
   { params }: { params: Promise<{ name: string }> }
 ) {
   const { name } = await params;
-  const link = await getLink(redis, name);
+  const link = await getShortLink(redis, name);
   if (!link) {
     track('link-not-found', {
       linkName: name,
     });
-    trackLinkMiss(redis, name);
+    trackShortLinkMiss(redis, name);
     return notFound();
   }
 
@@ -21,7 +25,7 @@ export async function GET(
     linkName: name,
     linkUrl: link.url,
   });
-  trackLinkHit(redis, name);
+  trackShortLinkHit(redis, name);
 
   return redirect(link.url);
 }

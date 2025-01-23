@@ -44,9 +44,9 @@ export default async function AdminLayout({
             <SidebarMenu>
               <SidebarMenuItem>
                 <SidebarMenuButton asChild>
-                  <Link href="/admin/links">
+                  <Link href="/admin/short-links">
                     <LinkIcon />
-                    <span>Links</span>
+                    <span>Short links</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>

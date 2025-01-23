@@ -1,6 +1,6 @@
 'use server';
 
-import { addLink, removeLink } from '@/lib/links';
+import { addShortLink, removeShortLink } from '@/lib/short-links';
 import { redis } from '@/lib/redis';
 import { adminSession } from '@/lib/session';
 import { revalidatePath } from 'next/cache';
@@ -10,7 +10,7 @@ const nanoid = customAlphabet(
   '1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'
 );
 
-export async function addLinkAction(formData: FormData) {
+export async function addShortLinkAction(formData: FormData) {
   const session = adminSession();
   if (!session) {
     throw new Error('Not logged in');
@@ -37,7 +37,7 @@ export async function addLinkAction(formData: FormData) {
     name = nameField;
   }
 
-  await addLink(redis, {
+  await addShortLink(redis, {
     url,
     name,
     createdAt: new Date().toISOString(),
@@ -45,7 +45,7 @@ export async function addLinkAction(formData: FormData) {
   revalidatePath('/admin/links');
 }
 
-export async function removeLinkAction(formData: FormData) {
+export async function removeShortLinkAction(formData: FormData) {
   'use server';
 
   const session = adminSession();
@@ -58,6 +58,6 @@ export async function removeLinkAction(formData: FormData) {
     throw new Error('Missing form data field: name');
   }
 
-  await removeLink(redis, name);
+  await removeShortLink(redis, name);
   revalidatePath('/admin/links');
 }

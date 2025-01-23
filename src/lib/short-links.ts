@@ -1,14 +1,14 @@
 import { Redis } from '@upstash/redis';
 
-export interface Link {
+export interface ShortLink {
   name: string;
   url: string;
   createdAt: string;
   hits?: number;
 }
 
-export interface LinksPage {
-  items: Link[];
+export interface ShortLinksPage {
+  items: ShortLink[];
   page: number;
   pageSize: number;
   itemsCount: number;
@@ -17,11 +17,11 @@ export interface LinksPage {
   pagesRemainingCount: number;
 }
 
-export async function listLinks(
+export async function listShortLinks(
   redis: Redis,
   page: number,
   pageSize: number
-): Promise<LinksPage> {
+): Promise<ShortLinksPage> {
   const start = page * pageSize;
   const end = start + pageSize - 1;
 
@@ -34,7 +34,7 @@ export async function listLinks(
 
   if (keys.length > 0) {
     const [items, hits] = await Promise.all([
-      redis.mget<Link[]>(keys),
+      redis.mget<ShortLink[]>(keys),
       redis.mget<number[]>(
         keys.map((x) => x.replace(/^@link\//, '@link-hit/'))
       ),
@@ -65,15 +65,15 @@ export async function listLinks(
   };
 }
 
-export async function getLink(
+export async function getShortLink(
   redis: Redis,
   name: string
-): Promise<Link | null> {
+): Promise<ShortLink | null> {
   const key = `@link/${name}`;
-  return redis.get<Link>(key);
+  return redis.get<ShortLink>(key);
 }
 
-export async function addLink(redis: Redis, link: Link) {
+export async function addShortLink(redis: Redis, link: ShortLink) {
   const key = `@link/${link.name}`;
   const p = redis.pipeline();
   p.set(key, link, { nx: true });
@@ -88,7 +88,7 @@ export async function addLink(redis: Redis, link: Link) {
   await p.exec();
 }
 
-export async function removeLink(redis: Redis, name: string) {
+export async function removeShortLink(redis: Redis, name: string) {
   const key = `@link/${name}`;
   const p = redis.pipeline();
   p.del(key);
@@ -96,12 +96,12 @@ export async function removeLink(redis: Redis, name: string) {
   await p.exec();
 }
 
-export async function trackLinkHit(redis: Redis, name: string) {
+export async function trackShortLinkHit(redis: Redis, name: string) {
   const key = `@link-hit/${name}`;
   await redis.incr(key);
 }
 
-export async function trackLinkMiss(redis: Redis, name: string) {
+export async function trackShortLinkMiss(redis: Redis, name: string) {
   const key = `@link-miss/${name}`;
   await redis.incr(key);
 }

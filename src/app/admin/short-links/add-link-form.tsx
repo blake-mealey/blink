@@ -13,21 +13,21 @@ import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Separator } from '@/components/ui/separator';
 import { useState } from 'react';
-import { addLinkAction } from './link-actions';
+import { addShortLinkAction } from './short-link-actions';
 
-export function AddLinkForm() {
+export function AddShortLinkForm() {
   const [nameType, setNameType] = useState('random');
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Add new link</CardTitle>
+        <CardTitle>Add new short link</CardTitle>
         <CardDescription>
-          Add a new link with either a random name or a chosen one.
+          Add a new short link with either a random name or a chosen one.
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <form action={addLinkAction}>
+        <form action={addShortLinkAction}>
           <div className="flex flex-col gap-6">
             <div className="grid gap-2">
               <Label htmlFor="url">URL</Label>

@@ -9,9 +9,9 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { Link, LinksPage } from '@/lib/links';
+import { ShortLink, ShortLinksPage } from '@/lib/short-links';
 import { CopyIcon, MoreHorizontalIcon, TrashIcon } from 'lucide-react';
-import { removeLinkAction } from './link-actions';
+import { removeShortLinkAction } from './short-link-actions';
 import copy from 'copy-to-clipboard';
 import {
   AlertDialog,
@@ -43,7 +43,7 @@ import { useIsMobile } from '@/hooks/use-mobile';
 
 const dateFormatter = new Intl.DateTimeFormat();
 
-const nameColumn: ColumnDef<Link, any> = {
+const nameColumn: ColumnDef<ShortLink, any> = {
   accessorKey: 'name',
   header: 'Name',
   cell: ({ getValue }) => {
@@ -55,7 +55,7 @@ const nameColumn: ColumnDef<Link, any> = {
   },
 };
 
-const urlColumn: ColumnDef<Link, any> = {
+const urlColumn: ColumnDef<ShortLink, any> = {
   accessorKey: 'url',
   header: 'URL',
   cell: ({ getValue }) => {
@@ -67,12 +67,12 @@ const urlColumn: ColumnDef<Link, any> = {
   },
 };
 
-const hitsColumn: ColumnDef<Link, any> = {
+const hitsColumn: ColumnDef<ShortLink, any> = {
   accessorKey: 'hits',
   header: 'Hits',
 };
 
-const createdAtColumn: ColumnDef<Link, any> = {
+const createdAtColumn: ColumnDef<ShortLink, any> = {
   accessorKey: 'createdAt',
   header: 'Created',
   cell: ({ getValue }) => {
@@ -80,14 +80,14 @@ const createdAtColumn: ColumnDef<Link, any> = {
   },
 };
 
-const actionsColumn: ColumnDef<Link, any> = {
+const actionsColumn: ColumnDef<ShortLink, any> = {
   id: 'actions',
   cell: ({ row }) => {
     return <LinkActions linkName={row.getValue('name')} />;
   },
 };
 
-export function LinksTable({ linksPage }: { linksPage: LinksPage }) {
+export function ShortLinksTable({ linksPage }: { linksPage: ShortLinksPage }) {
   const pathname = usePathname();
   const router = useRouter();
   const isMobile = useIsMobile();
@@ -244,7 +244,7 @@ function LinkActions({ linkName }: { linkName: string }) {
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel>Cancel</AlertDialogCancel>
-          <form action={removeLinkAction}>
+          <form action={removeShortLinkAction}>
             <input type="hidden" name="name" value={linkName} />
             <AlertDialogAction type="submit">Remove</AlertDialogAction>
           </form>
