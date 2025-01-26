@@ -41,6 +41,14 @@ export function AddBookmarkForm() {
   const [preview, setPreview] = useState<BookmarkPreview | null>(null);
   const [previewStatus, setPreviewStatus] = useState<PreviewStatus>('empty');
 
+  const toggleOpen = (newState: boolean) => {
+    setOpen(newState);
+    if (!newState) {
+      setPreview(null);
+      setPreviewStatus('empty');
+    }
+  };
+
   const updatePreview = async (url: string) => {
     if (!url) {
       setPreviewStatus('empty');
@@ -169,12 +177,12 @@ export function AddBookmarkForm() {
         <Accordion
           type="multiple"
           value={open ? ['1'] : []}
-          onValueChange={(x) => setOpen(x.includes('1'))}
+          onValueChange={(x) => toggleOpen(x.includes('1'))}
         >
           <AccordionItem value="1">
             <AccordionTrigger
               arrow={false}
-              className="hover:no-underline hover:bg-secondary"
+              className="hover:no-underline hover:bg-secondary py-0"
             >
               <CardHeader>
                 <CardTitle>Add new bookmark</CardTitle>
@@ -186,6 +194,7 @@ export function AddBookmarkForm() {
             <AccordionContent>
               <CardContent>
                 <form
+                  className="mt-2"
                   action={(formData) => {
                     setPreview(null);
                     setPreviewStatus('empty');
