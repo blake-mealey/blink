@@ -1,5 +1,5 @@
 import { redirect } from 'next/navigation';
 
 export default async function AdminPage() {
-  return redirect('/admin/short-links');
+  return redirect('/admin/bookmarks');
 }
