@@ -14,9 +14,8 @@ import {
   Table,
 } from '@/components/ui/table';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { BookmarksPage } from '@/lib/bookmarks';
+import { Bookmark, BookmarksPage } from '@/lib/bookmarks';
 import { Favicon, FaviconProps } from '@/lib/favicons';
-import { ShortLink } from '@/lib/short-links';
 import {
   AlertDialog,
   AlertDialogTrigger,
@@ -57,9 +56,9 @@ export function BookmarksTable({
   const router = useRouter();
   const isMobile = useIsMobile();
 
-  const nameColumn: ColumnDef<ShortLink, any> = {
-    accessorKey: 'name',
-    header: 'Name',
+  const nameColumn: ColumnDef<Bookmark, any> = {
+    accessorKey: 'graphMeta',
+    header: 'Title',
     cell: ({ getValue, row }) => {
       return (
         <a
@@ -77,7 +76,7 @@ export function BookmarksTable({
     },
   };
 
-  const urlColumn: ColumnDef<ShortLink, any> = {
+  const urlColumn: ColumnDef<Bookmark, any> = {
     accessorKey: 'url',
     header: 'URL',
     cell: ({ getValue }) => {
@@ -91,12 +90,12 @@ export function BookmarksTable({
     },
   };
 
-  const hitsColumn: ColumnDef<ShortLink, any> = {
+  const hitsColumn: ColumnDef<Bookmark, any> = {
     accessorKey: 'hits',
     header: 'Hits',
   };
 
-  const createdAtColumn: ColumnDef<ShortLink, any> = {
+  const createdAtColumn: ColumnDef<Bookmark, any> = {
     accessorKey: 'createdAt',
     header: 'Created',
     cell: ({ getValue }) => {
@@ -104,12 +103,12 @@ export function BookmarksTable({
     },
   };
 
-  const actionsColumn: ColumnDef<ShortLink, any> = {
+  const actionsColumn: ColumnDef<Bookmark, any> = {
     id: 'actions',
     cell: ({ row }) => {
       return (
         <LinkActions
-          bookmarkName={row.getValue('name')}
+          bookmarkName={row.getValue('graphMeta').title}
           bookmarkUrl={row.getValue('url')}
         />
       );

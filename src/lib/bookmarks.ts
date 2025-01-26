@@ -1,8 +1,11 @@
 import { Redis } from '@upstash/redis';
+import { GraphMeta } from './graph-meta';
 
 export interface Bookmark {
   url: string;
-  name: string;
+  graphMeta: GraphMeta;
+  faviconUrl: string;
+  notes: string;
   createdAt: string;
   hits?: number;
 }

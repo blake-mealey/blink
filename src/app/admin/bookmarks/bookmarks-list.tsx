@@ -18,7 +18,7 @@ import {
 } from '@/components/ui/context-menu';
 import { Bookmark } from '@/lib/bookmarks';
 import { Favicon, FaviconProps } from '@/lib/favicons';
-import { TrashIcon } from 'lucide-react';
+import { PencilIcon, TrashIcon } from 'lucide-react';
 import { removeBookmarkAction } from './bookmarks-actions';
 
 const dateFormatter = new Intl.DateTimeFormat();
@@ -69,19 +69,30 @@ function BookmarksListItem({
       >
         <ContextMenu>
           <ContextMenuTrigger>
-            <section className="transition-colors group-hover:bg-muted group-focus-visible:ring-1 group-focus-visible:ring-ring rounded-lg px-3 py-2">
-              <header className="flex justify-between">
-                <div className="flex items-center gap-2">
-                  <h1 className="font-semibold">{bookmark.name}</h1>
+            <section className="transition-colors group-hover:bg-muted group-focus-visible:ring-1 group-focus-visible:ring-ring rounded-lg px-3 py-2 flex flex-col gap-2">
+              <header>
+                <div className="flex justify-between">
+                  <h1 className="font-semibold">{bookmark.graphMeta.title}</h1>
+                  <div className="text-muted-foreground text-sm font-medium text-nowrap">
+                    Added on{' '}
+                    {dateFormatter.format(new Date(bookmark.createdAt))}
+                  </div>
                 </div>
-                <div className="text-muted-foreground text-sm">
-                  Added on {dateFormatter.format(new Date(bookmark.createdAt))}
+                <div className="flex items-center gap-2 text-muted-foreground font-medium">
+                  <Favicon src={bookmark.faviconUrl} />
+                  {urlFormatter.format(bookmark.url)}
                 </div>
               </header>
-              <div className="flex items-center gap-2 text-muted-foreground">
-                <Favicon {...favicons[bookmark.url]} />
-                {urlFormatter.format(bookmark.url)}
+
+              <div className="text-muted-foreground">
+                {bookmark.graphMeta.description}
               </div>
+              {bookmark.notes ? (
+                <div className="flex items-start gap-2">
+                  <PencilIcon size={16} className="mt-1" />
+                  <p className="text-muted-foreground">{bookmark.notes}</p>
+                </div>
+              ) : null}
             </section>
           </ContextMenuTrigger>
           <ContextMenuContent>
@@ -98,7 +109,7 @@ function BookmarksListItem({
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>
-            Remove "{bookmark.name}" bookmark?
+            Remove "{bookmark.graphMeta.title}" bookmark?
           </AlertDialogTitle>
           <AlertDialogDescription>
             This action cannot be undone. All data related to the bookmark
