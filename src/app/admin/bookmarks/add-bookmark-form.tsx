@@ -179,10 +179,10 @@ export function AddBookmarkForm() {
           value={open ? ['1'] : []}
           onValueChange={(x) => toggleOpen(x.includes('1'))}
         >
-          <AccordionItem value="1">
+          <AccordionItem value="1" className="border-none">
             <AccordionTrigger
               arrow={false}
-              className="hover:no-underline hover:bg-secondary py-0"
+              className="rounded-xl data-[state=open]:rounded-b-none data-[state=open]:rounded-tr-none hover:no-underline hover:bg-secondary py-0"
             >
               <CardHeader>
                 <CardTitle>Add new bookmark</CardTitle>

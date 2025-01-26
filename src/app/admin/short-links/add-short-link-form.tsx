@@ -27,10 +27,10 @@ export function AddShortLinkForm() {
   return (
     <Card>
       <Accordion type="multiple">
-        <AccordionItem value="1">
+        <AccordionItem value="1" className="border-none">
           <AccordionTrigger
             arrow={false}
-            className="hover:no-underline hover:bg-secondary py-0"
+            className="rounded-xl data-[state=open]:rounded-b-none hover:no-underline hover:bg-secondary py-0"
           >
             <CardHeader>
               <CardTitle>Add new short link</CardTitle>
