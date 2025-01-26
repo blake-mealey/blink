@@ -20,6 +20,13 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Textarea } from '@/components/ui/textarea';
 import { ImageIcon } from 'lucide-react';
 import { Favicon } from '@/lib/favicons';
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from '@/components/ui/accordion';
+import { cn } from '@/lib/utils';
 
 type PreviewStatus =
   | 'empty'
@@ -30,6 +37,7 @@ type PreviewStatus =
   | 'ready';
 
 export function AddBookmarkForm() {
+  const [open, setOpen] = useState(false);
   const [preview, setPreview] = useState<BookmarkPreview | null>(null);
   const [previewStatus, setPreviewStatus] = useState<PreviewStatus>('empty');
 
@@ -152,48 +160,68 @@ export function AddBookmarkForm() {
   }, [preview, previewStatus]);
 
   return (
-    <Card className="grid grid-cols-2">
+    <Card
+      className={cn('grid grid-cols-[minmax(0, 1fr)_0]', {
+        'grid-cols-2': open,
+      })}
+    >
       <div>
-        <CardHeader>
-          <CardTitle>Add new bookmark</CardTitle>
-          <CardDescription>
-            Add a new bookmark to your collection.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form
-            action={(formData) => {
-              setPreview(null);
-              setPreviewStatus('empty');
-              return addBookmarkAction(formData);
-            }}
-          >
-            <div className="flex flex-col gap-6">
-              <div className="grid gap-2">
-                <Label htmlFor="url">URL</Label>
-                <Input
-                  id="url"
-                  name="url"
-                  type="url"
-                  required
-                  placeholder="https://example.com"
-                  onChange={(e) => updatePreview(e.target.value)}
-                />
-              </div>
+        <Accordion
+          type="multiple"
+          value={open ? ['1'] : []}
+          onValueChange={(x) => setOpen(x.includes('1'))}
+        >
+          <AccordionItem value="1">
+            <AccordionTrigger
+              arrow={false}
+              className="hover:no-underline hover:bg-secondary"
+            >
+              <CardHeader>
+                <CardTitle>Add new bookmark</CardTitle>
+                <CardDescription>
+                  Add a new bookmark to your collection.
+                </CardDescription>
+              </CardHeader>
+            </AccordionTrigger>
+            <AccordionContent>
+              <CardContent>
+                <form
+                  action={(formData) => {
+                    setPreview(null);
+                    setPreviewStatus('empty');
+                    return addBookmarkAction(formData);
+                  }}
+                >
+                  <div className="flex flex-col gap-6">
+                    <div className="grid gap-2">
+                      <Label htmlFor="url">URL</Label>
+                      <Input
+                        autoFocus
+                        id="url"
+                        name="url"
+                        type="url"
+                        required
+                        placeholder="https://example.com"
+                        onChange={(e) => updatePreview(e.target.value)}
+                      />
+                    </div>
 
-              <div className="grid gap-2">
-                {/* TODO: textarea */}
-                <Label htmlFor="notes">Notes</Label>
-                <Textarea id="notes" name="notes" />
-              </div>
+                    <div className="grid gap-2">
+                      {/* TODO: textarea */}
+                      <Label htmlFor="notes">Notes</Label>
+                      <Textarea id="notes" name="notes" />
+                    </div>
 
-              <Button>Add</Button>
-            </div>
-          </form>
-        </CardContent>
+                    <Button>Add</Button>
+                  </div>
+                </form>
+              </CardContent>
+            </AccordionContent>
+          </AccordionItem>
+        </Accordion>
       </div>
       <div className="bg-secondary rounded-r-xl border-l border-border flex flex-col">
-        {previewView}
+        {open ? previewView : null}
       </div>
     </Card>
   );
