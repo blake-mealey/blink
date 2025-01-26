@@ -205,13 +205,13 @@ export function AddBookmarkForm() {
                     <div className="grid gap-2">
                       <Label htmlFor="url">URL</Label>
                       <Input
-                        autoFocus
                         id="url"
                         name="url"
                         type="url"
                         required
                         placeholder="https://example.com"
                         onChange={(e) => updatePreview(e.target.value)}
+                        autoFocus
                       />
                     </div>
 
