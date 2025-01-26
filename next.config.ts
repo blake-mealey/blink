@@ -1,3 +1,4 @@
+import { withColorSchemes } from '@/lib/color-scheme/lib';
 import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
@@ -12,4 +13,4 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default nextConfig;
+export default withColorSchemes(nextConfig);
