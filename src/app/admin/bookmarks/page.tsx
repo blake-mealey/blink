@@ -7,7 +7,6 @@ import {
   BreadcrumbPage,
 } from '@/components/ui/breadcrumb';
 import { AddBookmarkForm } from './add-bookmark-form';
-import { BookmarksTable } from './bookmarks-table';
 import { adminSession } from '@/lib/session';
 import { listBookmarks } from '@/lib/bookmarks';
 import { redis } from '@/lib/redis';
