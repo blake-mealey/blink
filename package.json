@@ -2,6 +2,10 @@
   "name": "blink",
   "version": "0.1.0",
   "private": true,
+  "packageManager": "pnpm@10.8.0",
+  "engines": {
+    "node": "22.14.0"
+  },
   "scripts": {
     "dev": "next dev",
     "build": "next build",
