@@ -33,10 +33,10 @@
     "copy-to-clipboard": "^3.3.3",
     "lucide-react": "^0.473.0",
     "nanoid": "^5.0.9",
-    "next": "15.1.5",
+    "next": "15.1.9",
     "open-graph-scraper": "^6.9.0",
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0",
+    "react": "19.0.1",
+    "react-dom": "19.0.1",
     "sonner": "^1.7.2",
     "tailwind-merge": "^2.6.0",
     "tailwindcss-animate": "^1.0.7"
